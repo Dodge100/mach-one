@@ -1,0 +1,135 @@
+name: Build Release
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install SDL2
+        run: brew install sdl2
+      
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      
+      - name: Build
+        run: cmake --build build --config Release -j$(sysctl -n hw.ncpu)
+      
+      - name: Package macOS (Intel)
+        run: |
+          mkdir -p dist
+          cp build/connectfour dist/connectfour-macos-x64
+          chmod +x dist/connectfour-macos-x64
+      
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: connectfour-macos-x64
+          path: dist/connectfour-macos-x64
+
+  build-macos-arm:
+    runs-on: macos-14  # Apple Silicon runner
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install SDL2
+        run: brew install sdl2
+      
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      
+      - name: Build
+        run: cmake --build build --config Release -j$(sysctl -n hw.ncpu)
+      
+      - name: Package macOS (ARM)
+        run: |
+          mkdir -p dist
+          cp build/connectfour dist/connectfour-macos-arm64
+          chmod +x dist/connectfour-macos-arm64
+      
+      - name: Upload macOS ARM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: connectfour-macos-arm64
+          path: dist/connectfour-macos-arm64
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install SDL2
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL/releases/download/release-2.30.0/SDL2-devel-2.30.0-VC.zip" -OutFile SDL2.zip
+          Expand-Archive -Path SDL2.zip -DestinationPath .
+          echo "SDL2_DIR=$PWD/SDL2-2.30.0/cmake" >> $env:GITHUB_ENV
+      
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DSDL2_DIR="$env:SDL2_DIR"
+      
+      - name: Build
+        run: cmake --build build --config Release
+      
+      - name: Package Windows
+        run: |
+          mkdir dist
+          copy build\Release\connectfour.exe dist\connectfour-windows-x64.exe
+          copy SDL2-2.30.0\lib\x64\SDL2.dll dist\
+      
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: connectfour-windows-x64
+          path: dist/
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libsdl2-dev
+      
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      
+      - name: Build
+        run: cmake --build build --config Release -j$(nproc)
+      
+      - name: Package Linux
+        run: |
+          mkdir -p dist
+          cp build/connectfour dist/connectfour-linux-x64
+          chmod +x dist/connectfour-linux-x64
+      
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: connectfour-linux-x64
+          path: dist/connectfour-linux-x64
+
+  upload-release:
+    needs: [build-macos, build-macos-arm, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/connectfour-macos-x64/connectfour-macos-x64
+            artifacts/connectfour-macos-arm64/connectfour-macos-arm64
+            artifacts/connectfour-windows-x64/*
+            artifacts/connectfour-linux-x64/connectfour-linux-x64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
