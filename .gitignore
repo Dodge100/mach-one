@@ -27,3 +27,6 @@ Makefile
 # Save files
 *.json
 !CMakeLists.txt
+
+# Extra files
+.DS_Store
