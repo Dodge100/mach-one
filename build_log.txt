@@ -1,0 +1,12 @@
+Building Connect Four...
+Configuring with CMake...
+-- Using the multi-header code from /Users/dodge1/Documents/projects/conect fuor/build/_deps/json-src/include/
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/dodge1/Documents/projects/conect fuor/build
+Building...
+[  6%] Building CXX object CMakeFiles/connectfour.dir/src/replay/PositionAnalyzer.cpp.o
+[ 31%] Building CXX object CMakeFiles/connectfour.dir/src/replay/GameHistory.cpp.o
+[ 31%] Building CXX object CMakeFiles/connectfour.dir/src/ui/CLI.cpp.o
+[ 31%] Building CXX object CMakeFiles/connectfour.dir/src/io/GameSerializer.cpp.o
+[ 31%] Building CXX object CMakeFiles/connectfour.dir/src/ui/GUI.cpp.o
