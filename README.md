@@ -1,8 +1,13 @@
-# Connect Four Bot
+# Mach One
 
-High-performance Connect 4 game with optimal AI using parallel minimax search, configurable board sizes, and game analysis features.
+Connect 4 engine using parallel minimax search and game analysis features.
 
-## Building
+For now using the cli is preferred since it has the most support for features however the gui can also let you play games against it.
+
+## Usage
+Download the latest [release](https://github.com/Dodge100/mach-one/actions) and click on it to play.
+
+## Development
 
 ### Prerequisites
 
@@ -35,8 +40,7 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build . --config Release
 ```
 
-## Usage
-
+running:
 ```bash
 # Launch with GUI
 ./connectfour --gui
