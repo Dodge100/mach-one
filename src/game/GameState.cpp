@@ -1,4 +1,5 @@
 #include "game/GameState.h"
+#include <stdexcept>
 
 namespace ConnectFour {
 

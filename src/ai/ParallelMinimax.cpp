@@ -1,6 +1,7 @@
 #include "ai/ParallelMinimax.h"
 #include <algorithm>
 #include <limits>
+#include <chrono>
 
 namespace ConnectFour {
 

@@ -67,10 +67,18 @@ jobs:
         run: |
           Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL/releases/download/release-2.30.0/SDL2-devel-2.30.0-VC.zip" -OutFile SDL2.zip
           Expand-Archive -Path SDL2.zip -DestinationPath .
-          echo "SDL2_DIR=$PWD/SDL2-2.30.0/cmake" >> $env:GITHUB_ENV
+          $sdl2Path = "$PWD\SDL2-2.30.0"
+          echo "SDL2_DIR=$sdl2Path\cmake" >> $env:GITHUB_ENV
+          echo "SDL2_INCLUDE=$sdl2Path\include" >> $env:GITHUB_ENV
+          echo "SDL2_LIB=$sdl2Path\lib\x64" >> $env:GITHUB_ENV
       
       - name: Configure CMake
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DSDL2_DIR="$env:SDL2_DIR"
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release `
+            -DSDL2_DIR="$env:SDL2_DIR" `
+            -DSDL2_INCLUDE_DIR="$env:SDL2_INCLUDE" `
+            -DSDL2_LIBRARY="$env:SDL2_LIB\SDL2.lib" `
+            -DSDL2MAIN_LIBRARY="$env:SDL2_LIB\SDL2main.lib"
       
       - name: Build
         run: cmake --build build --config Release

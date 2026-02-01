@@ -5,7 +5,13 @@
 #include "ai/PerformanceEstimator.h"
 #include "replay/GameHistory.h"
 #include "replay/PositionAnalyzer.h"
+
+#ifdef _WIN32
+#include <SDL.h>
+#else
 #include <SDL2/SDL.h>
+#endif
+
 #include <memory>
 #include <string>
 
